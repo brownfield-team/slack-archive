@@ -2,7 +2,7 @@ import { Message } from "models/message";
 import { User } from "models/user";
 import { userMapFromList, notEmpty } from "./general";
 import { Dictionary } from "typescript-collections";
-import { resolveIDs, listOfTaggedUsers } from "./slack";
+import { resolveIDs, listOfTaggedUsers, replaceSlackIDsWithReadableIDs } from "./slack";
 
 export interface SimpleData {
   value: number;
@@ -94,7 +94,9 @@ const dataRowForMessage = (message: Message, users: User[]) => {
   let messageType = "postMessage ";
   let messageId = message.channel + "-" + message.ts;
   let messageBody = message.text.replace(/"/g, '&quot;').replace(/'/g,'&apos;');
+  messageBody = replaceSlackIDsWithReadableIDs(messageBody,userMap);
   let taggedPeople = listOfTaggedUsers(message,userMap);
+  taggedPeople = replaceSlackIDsWithReadableIDs(taggedPeople,userMap);
   return [ 
     timestamp,
     personId,

@@ -37,10 +37,18 @@ export function resolveMessageIDs(
     message.text = "We are unable to display bot messages at this time.";
     message.user_profile.real_name = "[BOT] " + message.user_profile.real_name;
   } else {
-    message.text = message.text.replace(slackIDRegex, (match, p1) => {
-      return "@" + userMap[p1].real_name;
-    });
+    message.text = replaceSlackIDsWithReadableIDs(message.text,userMap);
   }
+}
+
+export function replaceSlackIDsWithReadableIDs(
+  s: string,
+  userMap: { [id: string]: User }
+) {
+  return s.replace(
+    slackIDRegex,
+    (match, p1) => { return "@" + userMap[p1].real_name; }
+  );
 }
 
 export function resolveIDs(messages: Message[], users: User[]) {

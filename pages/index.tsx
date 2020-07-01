@@ -3,17 +3,10 @@ import ChannelList from "components/channelList";
 import Layout from "components/layout";
 import MemberTable from "components/memberTable";
 import KeywordSearch from "components/keywordSearch";
+import {dataForCSVDownload} from "utils/plotting"
 import Button from "react-bootstrap/Button";
 // CSV Export based on https://stackoverflow.com/a/48763316
 import {CSVLink, CSVDownload} from 'react-csv';
-
-const getDataForCSVDownload = () => {
-  return [
-    ["header1","header2","header3"],
-    ["data1-1","data1-2",3],
-    ["data2-1","data3-1",3],
-  ]
-}
 
 export default function Home() {
   const { data } = useSWR("/api/channels");
@@ -30,7 +23,7 @@ export default function Home() {
       return (
         <Layout>
           <>
-            <CSVLink data={getDataForCSVDownload()} >Download CSV</CSVLink>
+            <CSVLink data={dataForCSVDownload(messages, users)} >Download CSV</CSVLink>
             <h1>A list of slack channels should appear here:</h1>
             <MemberTable channel={workspace} users={users} messages={messages} />
             <KeywordSearch users={users} messages={messages} />

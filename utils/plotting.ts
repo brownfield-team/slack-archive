@@ -73,6 +73,37 @@ export function messagesPerUser(messages: Message[], users: User[]) {
     .sort((a, b) => b.value - a.value);
 }
 
+const dataRowForMessage = (message: Message) => {
+  let timestamp = message.ts;
+  let personId = "person-TBD";
+  let teamID = "team-TBD";
+  let messageType = "postMessage ";
+  let messageId = message.channel + "-" + message.ts;
+  let messageBody = message.text;
+  let taggedPeople = "[taggedTBD1,taggedTBD2]";
+  return [ 
+    timestamp,
+    personId,
+    teamID,
+    messageType,
+    messageId,
+    messageBody,
+    taggedPeople
+  ];
+}
+
+// This should moved out of plotting.ts as part of a later
+// refactor.  It is here for now so that we can use the other
+// functions in this file as a guide.
+export function dataForCSVDownload(messages: Message[], users: User[]) {
+  const headers = ["timestamp","personId","teamID","type","messageId","messageBody","taggedPeople"];
+  console.log(JSON.stringify(messages,null,2));
+  const dataRows = messages.map( (message) => dataRowForMessage(message) );
+  let result = [ headers ];
+  result = result.concat(dataRows);
+  return result
+}
+
 export interface UserPair {
   respondee: string;
   responder: string;

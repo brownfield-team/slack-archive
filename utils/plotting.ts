@@ -2,6 +2,7 @@ import { Message } from "models/message";
 import { User } from "models/user";
 import { userMapFromList, notEmpty } from "./general";
 import { Dictionary } from "typescript-collections";
+import { resolveIDs, listOfTaggedUsers } from "./slack";
 
 export interface SimpleData {
   value: number;
@@ -49,6 +50,14 @@ export function messagesToData(messages: Message[]) {
     .sort((a, b) => a.x - b.x);
 }
 
+export function getUserName(user: User) {
+  return user.name;
+}
+
+export function getHumanReadableName(user: User) {
+  var retVal = user.profile.display_name || user.profile.real_name;
+}
+
 export function messagesPerUser(messages: Message[], users: User[]) {
   let userMessageCounts: { [id: string]: number } = {};
   messages.forEach((message) => {
@@ -64,8 +73,7 @@ export function messagesPerUser(messages: Message[], users: User[]) {
       return userMap[id]?.profile
         ? {
             value: count,
-            name:
-              userMap[id].profile.display_name || userMap[id].profile.real_name,
+            name: getUserName(userMap[id]),
           }
         : null;
     })
@@ -73,14 +81,20 @@ export function messagesPerUser(messages: Message[], users: User[]) {
     .sort((a, b) => b.value - a.value);
 }
 
-const dataRowForMessage = (message: Message) => {
-  let timestamp = message.ts;
-  let personId = "person-TBD";
+const dataRowForMessage = (message: Message, users: User[]) => {
+
+  let userMap = userMapFromList(users);
+  let userName = getUserName(userMap[message.user]);
+  let humanReadableName = getHumanReadableName(userMap[message.user]);
+
+  // let timestamp = message.ts; // raw system time
+  let timestamp = new Date(parseFloat(message.ts) * 1000.0).toISOString();
+  let personId = userName;
   let teamID = "team-TBD";
   let messageType = "postMessage ";
   let messageId = message.channel + "-" + message.ts;
-  let messageBody = message.text;
-  let taggedPeople = "[taggedTBD1,taggedTBD2]";
+  let messageBody = message.text.replace(/"/g, '&quot;').replace(/'/g,'&apos;');
+  let taggedPeople = listOfTaggedUsers(message,userMap);
   return [ 
     timestamp,
     personId,
@@ -96,11 +110,14 @@ const dataRowForMessage = (message: Message) => {
 // refactor.  It is here for now so that we can use the other
 // functions in this file as a guide.
 export function dataForCSVDownload(messages: Message[], users: User[]) {
+  resolveIDs(messages,users);
+
   const headers = ["timestamp","personId","teamID","type","messageId","messageBody","taggedPeople"];
   console.log(JSON.stringify(messages,null,2));
-  const dataRows = messages.map( (message) => dataRowForMessage(message) );
+  const dataRows = messages.map( (message) => dataRowForMessage(message, users) );
   let result = [ headers ];
   result = result.concat(dataRows);
+  console.log("result="+JSON.stringify(result,null,2))
   return result
 }
 

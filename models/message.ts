@@ -6,6 +6,7 @@ export interface Message {
   user: string;
   ts: string;
   team?: string;
+  channel: string;
   user_team?: string;
   source_team?: string;
   user_profile?: {

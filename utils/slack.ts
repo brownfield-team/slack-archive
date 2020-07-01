@@ -1,11 +1,20 @@
 import { Message } from "models/message";
 import { User } from "models/user";
+import { userMapFromList } from "./general";
 
 const slackIDRegex = /<@(U\w+)>/gi;
 
 export function sortedMessages(messages: Message[]) {
   return messages.sort((a: Message, b: Message) => Number(a.ts) - Number(b.ts));
 }
+
+export function listOfTaggedUsers(
+  message: Message,
+  userMap: { [id: string]: User }
+) {
+  return "[TBD]";
+}
+
 
 export function resolveMessageIDs(
   message: Message,
@@ -29,10 +38,7 @@ export function resolveMessageIDs(
 }
 
 export function resolveIDs(messages: Message[], users: User[]) {
-  let userMap: { [id: string]: User } = {};
-  for (const user of users) {
-    userMap[user.id] = user;
-  }
+  let userMap = userMapFromList(users);
   for (let message of messages) {
     resolveMessageIDs(message, userMap);
   }

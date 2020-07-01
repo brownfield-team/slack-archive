@@ -5,6 +5,11 @@ import MemberTable from "components/memberTable";
 import KeywordSearch from "components/keywordSearch";
 import Button from "react-bootstrap/Button";
 
+
+const doCSVExport = () => {
+  console.log("doCSVExport");
+}
+
 export default function Home() {
   const { data } = useSWR("/api/channels");
   if (data) {
@@ -20,7 +25,7 @@ export default function Home() {
       return (
         <Layout>
           <>
-            <Button>
+            <Button onClick={doCSVExport}>
               CSV Export
             </Button>
             <h1>A list of slack channels should appear here:</h1>

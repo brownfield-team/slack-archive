@@ -3,6 +3,7 @@ import ChannelList from "components/channelList";
 import Layout from "components/layout";
 import MemberTable from "components/memberTable";
 import KeywordSearch from "components/keywordSearch";
+import Button from "react-bootstrap/Button";
 
 export default function Home() {
   const { data } = useSWR("/api/channels");
@@ -19,6 +20,9 @@ export default function Home() {
       return (
         <Layout>
           <>
+            <Button>
+              CSV Export
+            </Button>
             <h1>A list of slack channels should appear here:</h1>
             <MemberTable channel={workspace} users={users} messages={messages} />
             <KeywordSearch users={users} messages={messages} />

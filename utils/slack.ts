@@ -12,7 +12,13 @@ export function listOfTaggedUsers(
   message: Message,
   userMap: { [id: string]: User }
 ) {
-  return "[TBD]";
+
+  // count the number of times that slackIDRegex occurs in message.text
+  // That's the number of tagged users.
+  // For each of those matches, get the user.name of that tagged user
+
+  let matches = message.text.match(slackIDRegex) || [];
+  return matches.toString();
 }
 
 

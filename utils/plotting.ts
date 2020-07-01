@@ -110,7 +110,7 @@ const dataRowForMessage = (message: Message, users: User[]) => {
 // refactor.  It is here for now so that we can use the other
 // functions in this file as a guide.
 export function dataForCSVDownload(messages: Message[], users: User[]) {
-  resolveIDs(messages,users);
+  // resolveIDs(messages,users);
 
   const headers = ["timestamp","personId","teamID","type","messageId","messageBody","taggedPeople"];
   console.log(JSON.stringify(messages,null,2));

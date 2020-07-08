@@ -16,6 +16,7 @@ export default function Home() {
       const channels = data.channels;
       const messages = data.messages;
       const users = data.users;
+      const slack2team = data.slack2team;
       const workspace = {
         name: "Workspace",
         members: users,
@@ -23,7 +24,7 @@ export default function Home() {
       return (
         <Layout>
           <>
-            <CSVLink data={dataForCSVDownload(messages, users)} >Download CSV</CSVLink>
+            <CSVLink data={dataForCSVDownload(messages, users, slack2team)} >Download CSV</CSVLink>
             <h1>A list of slack channels should appear here:</h1>
             <MemberTable channel={workspace} users={users} messages={messages} />
             <KeywordSearch users={users} messages={messages} />

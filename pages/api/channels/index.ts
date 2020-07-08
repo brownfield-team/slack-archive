@@ -3,6 +3,33 @@ import fs from "fs";
 import { getMessagesForChannel, getUsers } from "./[channelName]";
 import { Message } from "models/message";
 import { User } from "models/user";
+import { RosterStudent } from "models/roster_student";
+
+const getRosterStudents = async ():Promise<RosterStudent[]> => {
+  let roster_students_string = "";
+  try {
+    roster_students_string = await fs.promises.readFile(
+      "public/data/roster_students.json",
+      "utf8"
+    );
+  } catch (err) {
+    return [];
+  }
+  return JSON.parse(roster_students_string);
+}
+
+const getSlackToTeamMap = async ():Promise<any> => {
+  const roster_students:RosterStudent[] = await getRosterStudents();
+
+  let result: { [id: string] : string } = {};
+
+  for (const roster_student of roster_students) {
+    if (roster_student.slack_uid != undefined) {
+      result[roster_student.slack_uid!] = roster_student.teams; 
+    }
+  }
+  return result
+}
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   let channels_string = "";
@@ -37,6 +64,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
     return;
   }
+
+  const slack2team = await getSlackToTeamMap();
+
   res.statusCode = 200;
-  res.json({ channels, users, messages });
+  res.json({ channels, users, messages, slack2team});
 };

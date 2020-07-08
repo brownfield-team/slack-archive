@@ -58,6 +58,12 @@ export function getHumanReadableName(user: User) {
   return user ? (user.profile.display_name || user.profile.real_name ) : "";
 }
 
+export function getTeams(user: User, slack2team: { [id: string] : string }) {
+  if (!user) return "";
+  let result = slack2team[user.id];
+  return result ? result : "";
+}
+
 export function messagesPerUser(messages: Message[], users: User[]) {
   let userMessageCounts: { [id: string]: number } = {};
   messages.forEach((message) => {
@@ -81,7 +87,7 @@ export function messagesPerUser(messages: Message[], users: User[]) {
     .sort((a, b) => b.value - a.value);
 }
 
-const dataRowForMessage = (message: Message, users: User[]) => {
+const dataRowForMessage = (message: Message, users: User[], slack2team: { [id: string] : string }) => {
 
   let userMap = userMapFromList(users);
   let userName = getUserName(userMap[message.user]);
@@ -90,7 +96,7 @@ const dataRowForMessage = (message: Message, users: User[]) => {
   // let timestamp = message.ts; // raw system time
   let timestamp = new Date(parseFloat(message.ts) * 1000.0).toISOString();
   let personId = userName;
-  let teamID = "team-TBD";
+  let teamID = getTeams(userMap[message.user],slack2team);
   let messageType = "postMessage ";
   let messageId = message.channel + "-" + message.ts;
   let messageBody = message.text.replace(/"/g, '&quot;').replace(/'/g,'&apos;');
@@ -111,12 +117,12 @@ const dataRowForMessage = (message: Message, users: User[]) => {
 // This should moved out of plotting.ts as part of a later
 // refactor.  It is here for now so that we can use the other
 // functions in this file as a guide.
-export function dataForCSVDownload(messages: Message[], users: User[]) {
+export function dataForCSVDownload(messages: Message[], users: User[], slack2team: { [id: string] : string }) {
   // resolveIDs(messages,users);
 
   const headers = ["timestamp","personId","teamID","type","messageId","messageBody","taggedPeople"];
   console.log(JSON.stringify(messages,null,2));
-  const dataRows = messages.map( (message) => dataRowForMessage(message, users) );
+  const dataRows = messages.map( (message) => dataRowForMessage(message, users, slack2team) );
   let result = [ headers ];
   result = result.concat(dataRows);
   console.log("result="+JSON.stringify(result,null,2))

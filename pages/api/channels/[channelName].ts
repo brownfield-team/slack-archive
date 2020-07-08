@@ -19,6 +19,10 @@ export async function getMessagesForChannel(channelName: string | string[]) {
         "utf8"
       );
       const file_messages = JSON.parse(file_messages_json_string);
+      const messages_with_channel_name = file_messages.map( (m: Message) => {
+        m['channel'] = channelName as string;
+        return m;
+      })
       messages = messages.concat(file_messages);
     })
   );

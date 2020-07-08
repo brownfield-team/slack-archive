@@ -51,11 +51,11 @@ export function messagesToData(messages: Message[]) {
 }
 
 export function getUserName(user: User) {
-  return user.name;
+  return user ? user.name : "";
 }
 
 export function getHumanReadableName(user: User) {
-  var retVal = user.profile.display_name || user.profile.real_name;
+  return user ? (user.profile.display_name || user.profile.real_name ) : "";
 }
 
 export function messagesPerUser(messages: Message[], users: User[]) {
